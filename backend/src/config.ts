@@ -15,7 +15,7 @@ const envSchema = z.object({
   DATABRICKS_TOKEN: z.string().min(1),
   DATABRICKS_SERVER_HOSTNAME: z.string().min(1),
   DATABRICKS_HTTP_PATH: z.string().min(1),
-  DATABRICKS_CATALOG: z.string().default("signalforge"),
+  DATABRICKS_CATALOG: z.string().default("dataforgeai"),
 });
 
 export const env = envSchema.parse(process.env);
