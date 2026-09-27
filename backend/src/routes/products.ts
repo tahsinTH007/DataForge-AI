@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { queryDatabricks } from "../databricks/sql.js";
 import { CATALOG } from "../config.js";
+import { parseComplaintCategory } from "../utils/complaintCategory.js";
+import { computeHealthStatus, healthLabel } from "../health/rules.js";
 
 export const productsRouter = Router();
 
@@ -24,8 +26,11 @@ function buildProductMetrics(row: MetricsRow | undefined) {
     negativePct: row?.negative_pct !== null ? Number(row?.negative_pct) : null,
   };
 
+  const healthStatus = computeHealthStatus(productMetrics);
+
   return {
     metrics: productMetrics,
+    health: { status: healthStatus, label: healthLabel(healthStatus) },
   };
 }
 
@@ -73,6 +78,7 @@ productsRouter.get("/products", async (_req, res) => {
         name: product.name,
         category: product.category,
         ...buildProductMetrics(product),
+        topComplaint: parseComplaintCategory(product.top_complaint),
         flagged: false,
       })),
     });
@@ -82,4 +88,3 @@ productsRouter.get("/products", async (_req, res) => {
     res.status(500).json({ error: message });
   }
 });
-
