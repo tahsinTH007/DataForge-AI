@@ -242,3 +242,19 @@ productsRouter.get("/products/:productId", async (req, res) => {
     res.status(500).json({ error: message });
   }
 });
+
+productsRouter.put("/products/:productId/flag", async (req, res) => {
+  const flagged = Boolean(req.body?.flagged);
+  try {
+    const updatedFlag = await setProductAsFlaggedProduct(
+      req.params.productId,
+      flagged,
+    );
+
+    res.json({ productId: req.params.productId, flagged: updatedFlag });
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "Failed to load products";
+    res.status(500).json({ error: message });
+  }
+});
